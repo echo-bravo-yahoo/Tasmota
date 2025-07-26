@@ -15,7 +15,7 @@ class lwdecode_cls
     self.LwDecoders = {}
     self.topic = string.replace(string.replace(
                    tasmota.cmd('_FullTopic',true)['FullTopic'],
-                   '%topic%', tasmota.cmd('_Topic',true)['Topic']),
+                   '%topic%', tasmota.cmd('_Status',true)['Status']['Topic']),
                    '%prefix%', tasmota.cmd('_Prefix',true)['Prefix3'])  # tele
                  + 'SENSOR'
 

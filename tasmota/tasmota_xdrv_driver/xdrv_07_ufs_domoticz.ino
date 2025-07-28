@@ -649,22 +649,24 @@ void DomoticzSendData(uint32_t sensor_idx, uint32_t idx, char *data) {
 }
 
 void DomoticzSensor(uint8_t idx, char *data) {
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+
   if (Domoticz->Settings.sensor_idx[idx]) {
     DomoticzSendData(idx, Domoticz->Settings.sensor_idx[idx], data);
   }
 }
 
-uint8_t DomoticzHumidityState(float h) {
-  return (!h) ? 0 : (h < 40) ? 2 : (h > 70) ? 3 : 1;
-}
-
 void DomoticzSensor(uint8_t idx, int value) {
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+
   char data[16];
   snprintf_P(data, sizeof(data), PSTR("%d"), value);
   DomoticzSensor(idx, data);
 }
 
 void DomoticzFloatSensor(uint8_t idx, float value) {
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+  
   uint32_t resolution = 1;
 /*
   switch (idx) {
@@ -683,8 +685,14 @@ void DomoticzFloatSensor(uint8_t idx, float value) {
   DomoticzSensor(idx, data);
 }
 
+uint8_t DomoticzHumidityState(float h) {
+  return (!h) ? 0 : (h < 40) ? 2 : (h > 70) ? 3 : 1;
+}
+
 //void DomoticzTempHumPressureSensor(float temp, float hum, float baro = -1);
 void DomoticzTempHumPressureSensor(float temp, float hum, float baro) {
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+
   char temperature[FLOATSZ];
   dtostrfd(temp, Settings->flag2.temperature_resolution, temperature);
   char humidity[FLOATSZ];
@@ -704,6 +712,8 @@ void DomoticzTempHumPressureSensor(float temp, float hum, float baro) {
 }
 
 void DomoticzSensorPowerEnergy(int power, char *energy) {
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+
   char data[16];
   snprintf_P(data, sizeof(data), PSTR("%d;%s"), power, energy);
   DomoticzSensor(DZ_POWER_ENERGY, data);
@@ -715,6 +725,8 @@ void DomoticzSensorP1SmartMeter(char *usage1, char *usage2, char *return1, char 
   //return1  = energy return meter tariff 1, This is an incrementing counter
   //return2  = energy return meter tariff 2, This is an incrementing counter
   //power    = if >= 0 actual usage power. if < 0 actual return power (Watt)
+  if (!Domoticz) { return; }  // No MQTT enabled or unable to allocate memory
+
   int consumed = power;
   int produced = 0;
   if (power < 0) {

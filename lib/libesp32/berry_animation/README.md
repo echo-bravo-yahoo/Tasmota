@@ -116,7 +116,7 @@ Use oscillating values to create complex effects:
 ```berry
 animation pulsing_comet = comet_animation(
   color=red
-  tail_length = smooth_oscillator(min_value=5, max_value=15, duration=3s)
+  tail_length = smooth(min_value=5, max_value=15, duration=3s)
   speed=2
 )
 ```
@@ -188,29 +188,6 @@ animation ocean_waves = rich_palette(
 )
 run ocean_waves
 ```
-
-## ⚡ Performance
-
-Optimized for embedded systems:
-
-- **Memory Efficient** - Minimal RAM usage
-- **CPU Optimized** - Efficient rendering algorithms  
-- **Scalable** - Handles strips from 10 to 1000+ LEDs
-- **Real-time** - Smooth 30+ FPS animation
-
-### Performance Tips
-- Use longer animation periods (2-5 seconds) for smoother performance
-- Limit simultaneous animations (3-5 max recommended)
-- Consider strip length when designing complex effects
-
-## 🤝 Contributing
-
-Contributions are welcome! Areas for contribution:
-- New animation effects
-- Performance optimizations  
-- Documentation improvements
-- Example animations
-- Bug fixes and testing
 
 ## 📄 License
 

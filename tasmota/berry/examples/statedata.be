@@ -50,12 +50,15 @@ class mqttdata_cls
   end
 
   def web_sensor()
-    var msg = format("</table>{t}")                 # Terminate two column table and open new table
-    for i: self.list_buffer.keys()
-      msg += self.list_buffer[i]
+    if self.list_buffer.size()
+      var msg = format("</table>{t}")               # Terminate two column table and open new table
+      for i: self.list_buffer.keys()
+        msg += self.list_buffer[i]
+      end
+      msg += "</table>{t}"                          # Terminate three column table and open new table
+      tasmota.web_send(msg)                         # Do not use tasmota.web_send_decimal() which will replace IPAddress dots
+      tasmota.web_send_decimal("")                  # Force horizontal line
     end
-    msg += "</table>{t}"                            # Terminate three column table and open new table
-    tasmota.web_send(msg)                           # Do not use tasmota.web_send_decimal() which will replace IPAddress dots
   end
 end
 

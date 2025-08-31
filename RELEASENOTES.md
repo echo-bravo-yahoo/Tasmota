@@ -119,6 +119,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 - Commands `LoRaWanDecoder "` and `LoRaWanName "` to clear name [#23394](https://github.com/arendst/Tasmota/issues/23394)
 - Command `I2sPause` [#23646](https://github.com/arendst/Tasmota/issues/23646)
 - Support for RV3028 RTC [#23672](https://github.com/arendst/Tasmota/issues/23672)
+- Support for RX8030 RTC [#23855](https://github.com/arendst/Tasmota/issues/23855)
 - Extend state JSON message with functional hostname and ipaddress which could be WiFi or Ethernet
 - Internal function 'WSContentSendRaw_P' [#23641](https://github.com/arendst/Tasmota/issues/23641)
 - Universal display driver for ZJY169S0800TG01 ST7789 280x240 [#23638](https://github.com/arendst/Tasmota/issues/23638)

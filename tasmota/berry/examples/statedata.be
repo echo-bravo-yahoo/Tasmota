@@ -17,6 +17,7 @@ class mqttdata_cls
   var line_highlight                                # Highlight latest change duration
   var line_highlight_color                          # Highlight color
   var line_duration                                 # Duration option
+  var line_topic_is_hostname                        # Treat topic as hostname
   var list_buffer                                   # Buffer storing lines
 
   def init()
@@ -27,6 +28,7 @@ class mqttdata_cls
     self.line_highlight = 10                        # Highlight latest change duration in seconds
     self.line_highlight_color = "yellow"            # Highlight HTML color like "#FFFF00" or "yellow"
     self.line_duration = 0                          # Show duration of last state message (1)
+    self.line_topic_is_hostname = 0                 # Treat topic as hostname (1)
 
     self.list_buffer = []                           # Init line buffer list
 
@@ -150,7 +152,12 @@ class mqttdata_cls
           msg += format("<td><a target=_blank href='http://%s.'>%s</a></td><td><a target=_blank href='http://%s'>%s</a></td>",
                         topic, topic, ipaddress, ipaddress)
         else
-          msg += format("<td>%s</td><td>&nbsp</td>", topic)
+          if self.line_topic_is_hostname
+            msg += format("<td><a target=_blank href='http://%s.'>%s</a></td><td>&nbsp</td>",
+                          topic, topic)
+          else
+            msg += format("<td>%s</td><td>&nbsp</td>", topic)
+          end
         end
 
         if last_seen >= (now - self.line_highlight) # Highlight changes within latest seconds

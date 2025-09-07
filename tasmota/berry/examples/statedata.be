@@ -14,6 +14,8 @@ class mqttdata_cls
   var line_option                                   # Line option
   var line_cnt                                      # Number of lines
   var line_teleperiod                               # Skip any device taking longer to respond (probably offline)
+  var line_highlight                                # Highlight latest change duration
+  var line_highlight_color                          # Highlight color
   var line_duration                                 # Duration option
   var list_buffer                                   # Buffer storing lines
 
@@ -21,7 +23,9 @@ class mqttdata_cls
 #    self.line_option = 1                            # Scroll line_cnt lines
     self.line_option = 2                            # Show devices updating within line_teleperiod
     self.line_cnt = 10                              # Option 1 number of lines to show
-    self.line_teleperiod = 1200                     # Option 2 number of teleperiod for devices to be shown
+    self.line_teleperiod = 1200                     # Option 2 number of teleperiod seconds for devices to be shown
+    self.line_highlight = 10                        # Highlight latest change duration in seconds
+    self.line_highlight_color = "yellow"            # Highlight HTML color like "#FFFF00" or "yellow"
     self.line_duration = 0                          # Show duration of last state message (1)
 
     self.list_buffer = []                           # Init line buffer list
@@ -107,7 +111,8 @@ class mqttdata_cls
 
   def web_sensor()
     if self.list_buffer.size()
-      var time_window = tasmota.rtc('local') - self.line_teleperiod
+      var now = tasmota.rtc('local')
+      var time_window = now - self.line_teleperiod
       var list_index = 0
       var list_size = size(self.list_buffer)
       while list_index < list_size
@@ -147,7 +152,13 @@ class mqttdata_cls
         else
           msg += format("<td>%s</td><td>&nbsp</td>", topic)
         end
-        msg += format("<td align='right'>%s</td>", uptime)
+
+        if last_seen >= (now - self.line_highlight) # Highlight changes within latest seconds
+          msg += format("<td align='right' style='color:%s'>%s</td>", self.line_highlight_color, uptime)
+        else 
+          msg += format("<td align='right'>%s</td>", uptime)
+        end
+
         if self.line_duration
           msg += format("<td style='font-size:90%%'>&#x1F557;%s</td>",  # Clock
                         self.dhm(last_seen))

@@ -49,36 +49,27 @@ class mqttdata_cls
 
       var state = json.load(data)
       if state                                      # Valid JSON state message
-        var sub_option = 1
         var ipaddress = ""                          # Not used
         var uptime = state['Uptime']                # 129T10:52:41
         if state.find('Hostname')
-          sub_option = 2
           topic = state['Hostname']                 # wemos7
           ipaddress = state['IPAddress']            # 192.168.2.123
         end
         var last_seen = tasmota.rtc('local')
-        var line = format("%s,%s,%s,%d,%d", topic, ipaddress, uptime, last_seen, sub_option)
+        var line = format("%s,%s,%s,%d", topic, ipaddress, uptime, last_seen)
 
-        if 1 == self.line_option
-          self.list_buffer.push(line)               # Add state as last entry
-          if self.list_buffer.size() > self.line_cnt  # Max number of lines in buffer
-            self.list_buffer.remove(0)              # Remove first entry
-          end
-        elif 2 == self.line_option
-          if self.list_buffer.size()
-            var i = 0
-            var list_size = size(self.list_buffer)
-            while i < list_size                     # Use while loop as counter is decremented
-              if 0 == string.find(self.list_buffer[i], topic)
-                self.list_buffer.remove(i)          # Remove current state
-                list_size -= 1                      # Continue for duplicates
-              end
-              i += 1
+        if self.list_buffer.size()
+          var list_index = 0
+          var list_size = size(self.list_buffer)
+          while list_index < list_size              # Use while loop as counter is decremented
+            if 0 == string.find(self.list_buffer[list_index], topic)
+              self.list_buffer.remove(list_index)   # Remove current state
+              list_size -= 1                        # Continue for duplicates
             end
+            list_index += 1
           end
-          self.list_buffer.push(line)               # Add state as last entry
-        end  
+        end
+        self.list_buffer.push(line)                 # Add state as last entry
 
       end
     end
@@ -116,60 +107,61 @@ class mqttdata_cls
 
   def web_sensor()
     if self.list_buffer.size()
-      var msg = ""
+      var time_window = tasmota.rtc('local') - self.line_teleperiod
+      var list_index = 0
+      var list_size = size(self.list_buffer)
+      while list_index < list_size
+        var splits = string.split(self.list_buffer[list_index], ",")
+        var last_seen = int(splits[3])
+        if time_window > last_seen                  # Remove offline devices
+          self.list_buffer.remove(list_index)
+          list_size -= 1
+        end
+        list_index += 1
+      end
+      if !list_size return end                      # If list became empty bail out
 
       if 2 == self.line_option
-        # Sort list
         var less = /a,b -> a < b
-        self.sort(self.list_buffer, less)
+        self.sort(self.list_buffer, less)           # Sort list by topic and/or hostname
       end
 
-      var stx = false                               # If list_buffer is empty due to removes show nothing
-      var time_window = tasmota.rtc('local') - self.line_teleperiod
-      var i = 0
-      var j = size(self.list_buffer)
-      while i < j
-        var splits = string.split(self.list_buffer[i], ",")
-        var last_seen = int(splits[3])
-
-        if time_window > last_seen                  # Remove offline devices
-          self.list_buffer.remove(i)
-          j -= 1
-          continue
-        end
-
+      list_index = 0
+      if 1 == self.line_option
+        list_index = list_size - self.line_cnt      # Offset in list using self.line_cnt
+        if list_index < 0 list_index = 0 end
+      end
+      var msg = format("</table>{t}")               # Terminate two column table and open new table: <table style='width:100%'>
+      while list_index < list_size
+        var splits = string.split(self.list_buffer[list_index], ",")
         var topic = splits[0]                       # topic or hostname
         var ipaddress = splits[1]
         var uptime = splits[2]
-        var sub_option = int(splits[4])
+        var last_seen = int(splits[3])
 
-        if !stx
-          stx = true
-          msg = format("</table>{t}")               # Terminate two column table and open new table
-        end
 #        msg += format("<tr style='font-size:%d%%'>", 90 - (self.line_duration * 10))
         msg += "<tr style='font-size:80%'>"
-        if 1 == sub_option
-          msg += format("<td>%s</td><td>&nbsp</td><td align='right'>%s</td>",
-                        topic, uptime)
-        elif 2 == sub_option
-          msg += format("<td><a target=_blank href='http://%s.'>%s</a></td><td><a target=_blank href='http://%s'>%s</a></td><td align='right'>%s</td>",
-                        topic, topic, ipaddress, ipaddress, uptime)
+        if ipaddress
+          msg += format("<td><a target=_blank href='http://%s.'>%s</a></td><td><a target=_blank href='http://%s'>%s</a></td>",
+                        topic, topic, ipaddress, ipaddress)
+        else
+          msg += format("<td>%s</td><td>&nbsp</td>", topic)
         end
+        msg += format("<td align='right'>%s</td>", uptime)
         if self.line_duration
           msg += format("<td style='font-size:90%%'>&#x1F557;%s</td>",  # Clock
                         self.dhm(last_seen))
         end
         msg += "</tr>"
-        i += 1
+        list_index += 1
       end
-      if stx
-        msg += "</table>{t}"                        # Terminate three column table and open new table
-        tasmota.web_send(msg)                       # Do not use tasmota.web_send_decimal() which will replace IPAddress dots
-        tasmota.web_send_decimal("")                # Force horizontal line
-      end
+      msg += "</table>{t}"                          # Terminate three/four column table and open new table: <table style='width:100%'>
+      msg += format("{s}Devices online{m}%d{e}", list_size) # <tr><th>Devices online</th><td style='width:20px;white-space:nowrap'>%d</td></tr>
+      tasmota.web_send(msg)                         # Do not use tasmota.web_send_decimal() which will replace IPAddress dots
+      tasmota.web_send_decimal("")                  # Force horizontal line
     end
   end
+
 end
 
 mqttdata = mqttdata_cls()

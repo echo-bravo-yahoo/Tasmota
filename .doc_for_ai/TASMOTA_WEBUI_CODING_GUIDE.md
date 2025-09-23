@@ -388,7 +388,7 @@ For configuration pages with forms:
         <fieldset>
             <legend><b>&nbsp;Template&nbsp;</b></legend>
             <p>
-                <input id='t1' placeholder="Template" value='{"NAME":"ESP32-DevKit",...}'>
+                <input id='t1' placeholder="Template" value='{&quot;NAME&quot;:&quot;ESP32-DevKit&quot;,&quot;GPIO&quot;:[1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1376,0,1,224,1,0,1,1,0,0,0,0,0,1,1,0,1,1,0,0,1],&quot;FLAG&quot;:0,&quot;BASE&quot;:1}'>
             </p>
             <p>
                 <label>
@@ -493,11 +493,6 @@ The main control page features a prominent status display and interactive contro
     </tr>
 </table>
 
-<!-- Large Status Display -->
-<div style='text-align:center;font-size:4em;font-weight:bold;color:var(--c_txt);padding:20px;'>
-    OFF
-</div>
-
 <!-- Button State Script -->
 <script>
     eb('o1').style.background = 'var(--c_btnoff)';
@@ -506,65 +501,7 @@ The main control page features a prominent status display and interactive contro
 
 ## Advanced UI Components
 
-### Status Display
 
-The main page features a large, prominent status display:
-
-```css
-.status-display {
-    text-align: center;
-    font-size: 4em;
-    font-weight: bold;
-    color: var(--c_txt);
-    padding: 20px;
-    margin: 10px 0;
-}
-```
-
-```html
-<div class="status-display">OFF</div>
-```
-
-### Color Control Sliders
-
-The interface includes sophisticated color control with visual feedback:
-
-```html
-<!-- Hue Control with Rainbow Gradient -->
-<div class='r' style='background: linear-gradient(to right, #f00 0%, #ff0 16.66%, #0f0 33.33%, #0ff 50%, #00f 66.66%, #f0f 83.33%, #f00 100%);'>
-    <input type='range' min='0' max='359' value='95' onchange='updateHue(this.value)'>
-</div>
-
-<!-- Saturation Control -->
-<div class='r' style='background: linear-gradient(to right, #ccc, #0f0);'>
-    <input type='range' min='0' max='100' value='94' onchange='updateSaturation(this.value)'>
-</div>
-
-<!-- Brightness Control -->
-<div class='r' style='background: linear-gradient(to right, #000, #fff);'>
-    <input type='range' min='0' max='100' value='80' onchange='updateBrightness(this.value)'>
-</div>
-```
-
-### Button Layout Patterns
-
-Based on the screenshots, buttons follow specific layout patterns:
-
-```css
-/* Full-width buttons with consistent spacing */
-.btn-full {
-    width: 100%;
-    margin: 2px 0;
-    padding: 12px;
-    border-radius: 4px;
-}
-
-/* Button color variations */
-.btn-primary { background: var(--c_btn); }      /* Blue - Navigation */
-.btn-success { background: var(--c_btnsv); }    /* Green - Save */
-.btn-danger { background: var(--c_btnrst); }    /* Red - Reset/Restart */
-.btn-secondary { background: var(--c_btnoff); } /* Gray - Disabled */
-```
 
 ## Advanced UI Components
 
@@ -657,143 +594,15 @@ td {
 
 ## Integration with Tasmota Backend
 
-### Command Execution Pattern
 
-```javascript
-// Execute Tasmota command via AJAX
-function executeCommand(cmd, params) {
-    var url = '/?m=1&' + cmd;
-    if (params) url += '=' + encodeURIComponent(params);
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            // Handle response
-            updateUI(xhr.responseText);
-        }
-    };
-    xhr.send();
-}
-```
 
-### Status Updates
 
-```javascript
-// Auto-refresh status every 400ms
-function refreshStatus() {
-    la(); // Calls the main load function
-}
-
-setInterval(refreshStatus, 400);
-```
-
-### Form Submission
-
-```javascript
-// Handle form submission with confirmation
-function submitForm(formId, confirmMsg) {
-    if (confirmMsg && !confirm(confirmMsg)) {
-        return false;
-    }
-    document.getElementById(formId).submit();
-    return true;
-}
-```
-
-## Visual Design Specifications
-
-### Layout Dimensions
-
-Based on the screenshots, the interface uses these key dimensions:
-
-- **Minimum width**: 340px (as specified in CSS)
-- **Button height**: Approximately 48px for touch-friendly interaction
-- **Spacing**: 2-4px between elements, larger gaps between sections
-- **Border radius**: 4px for buttons and form elements
-
-### Typography Hierarchy
-
-```css
-/* Device name header */
-h3 { 
-    font-size: 1.2em; 
-    color: var(--c_ttl); 
-    margin: 10px 0; 
-}
-
-/* Main title */
-h2 { 
-    font-size: 1.8em; 
-    color: var(--c_ttl); 
-    margin: 5px 0; 
-}
-
-/* Status display */
-.status { 
-    font-size: 4em; 
-    font-weight: bold; 
-    text-align: center; 
-}
-
-/* Section headers */
-legend { 
-    font-weight: bold; 
-    padding: 0 10px; 
-}
-```
-
-### Form Element Styling
-
-The screenshots show consistent form styling:
-
-```css
-/* Text inputs with proper spacing */
-input[type="text"], input[type="password"] {
-    padding: 8px;
-    margin: 4px 0;
-    border: 1px solid #666;
-    border-radius: 4px;
-    background: var(--c_in);
-    color: var(--c_intxt);
-}
-
-/* Checkboxes with labels */
-input[type="checkbox"] {
-    margin-right: 8px;
-    transform: scale(1.2);
-}
-
-/* Radio buttons in groups */
-input[type="radio"] {
-    margin-right: 8px;
-    margin-left: 0;
-}
-```
-
-### Matter Protocol Integration
-
-The screenshots show Matter protocol support with a distinctive icon:
-
-```html
-<button>
-    <svg style='vertical-align:middle;' width='24' height='24' viewBox='100 100 240 240'>
-        <!-- Matter protocol icon SVG path -->
-    </svg>
-    Matter
-</button>
-```
 
 ## Common UI Patterns
 
-### 1. Toggle Buttons
+### 1. Toggle Buttons (from original source)
 ```html
-<button id='toggle1' onclick='toggleRelay(1)'>Toggle 1</button>
-<script>
-function toggleRelay(num) {
-    la('&o=' + num);
-}
-</script>
+<button id='o1' onclick='la("&o=1");'>Toggle 1</button>
 ```
 
 ### 2. Configuration Sections
@@ -847,101 +656,50 @@ function toggleRelay(num) {
 <input id='wp' type='password' placeholder="Web Admin Password" value="****">
 ```
 
-### 7. Template Configuration
+### 7. Template Configuration (from original source)
 ```html
 <fieldset>
     <legend><b>&nbsp;Template&nbsp;</b></legend>
     <p>
-        <input id='template' placeholder="Template" 
-               value='{"NAME":"ESP32-DevKit","GPIO":[1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1376,0,1,224,1,0,1,1,0,0,0,0,0,1,1,0,1,1,0,0,1],"FLAG":0,"BASE":1}'>
+        <input id='t1' placeholder="Template" value='{&quot;NAME&quot;:&quot;ESP32-DevKit&quot;,&quot;GPIO&quot;:[1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1376,0,1,224,1,0,1,1,0,0,0,0,0,1,1,0,1,1,0,0,1],&quot;FLAG&quot;:0,&quot;BASE&quot;:1}'>
     </p>
     <p>
         <label>
-            <input type='checkbox' checked disabled>
+            <input id='t2' type='checkbox' checked disabled>
             <b>Activate</b>
         </label>
     </p>
 </fieldset>
 ```
 
-### 8. Status Display with Dynamic Updates
+### 8. Color Control Sliders (from original source)
 ```html
-<div id='status-display' style='text-align:center;font-size:4em;font-weight:bold;color:var(--c_txt);padding:20px;'>
-    OFF
-</div>
-
-<script>
-function updateStatus(state) {
-    const display = eb('status-display');
-    display.textContent = state ? 'ON' : 'OFF';
-    display.style.color = state ? 'var(--c_txtscc)' : 'var(--c_txt)';
-}
-</script>
-```
-
-### 9. Color Picker Sliders
-```html
-<!-- Complete color control system -->
 <table style='width:100%'>
-    <!-- Hue slider with rainbow background -->
     <tr>
-        <td colspan='2'>
-            <div class='r' style='background:linear-gradient(to right,#f00 0%,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,#f00 100%);'>
-                <input id='hue' type='range' min='0' max='359' value='95' onchange='updateColor()'>
+        <td colspan='2' style='width:100%'>
+            <div id='b' class='r' style='background-image:linear-gradient(to right,#800,#f00 5%,#ff0 20%,#0f0 35%,#0ff 50%,#00f 65%,#f0f 80%,#f00 95%,#800);'>
+                <input id='sl2' type='range' min='0' max='359' value='95' onchange='lc("h",0,value)'>
             </div>
         </td>
     </tr>
-    
-    <!-- Saturation slider -->
     <tr>
-        <td colspan='2'>
-            <div class='r' style='background:linear-gradient(to right,#ccc,#0f0);'>
-                <input id='sat' type='range' min='0' max='100' value='94' onchange='updateColor()'>
+        <td colspan='2' style='width:100%'>
+            <div id='s' class='r' style='background-image:linear-gradient(to right,#CCCCCC,#6AFF00);'>
+                <input id='sl3' type='range' min='0' max='100' value='94' onchange='lc("n",0,value)'>
             </div>
         </td>
     </tr>
-    
-    <!-- Brightness slider with button -->
     <tr>
         <td style='width:15%'>
-            <button onclick='toggleSecondary()'>T2</button>
+            <button id='o2' onclick='la("&o=2");'>T2</button>
         </td>
-        <td style='width:85%'>
-            <div class='r' style='background:linear-gradient(to right,#000,#fff);'>
-                <input id='bri' type='range' min='0' max='100' value='80' onchange='updateColor()'>
+        <td colspan='1' style='width:85%'>
+            <div id='c' class='r' style='background-image:linear-gradient(to right,#000,#fff);'>
+                <input id='sl4' type='range' min='0' max='100' value='80' onchange='lc("d",0,value)'>
             </div>
         </td>
     </tr>
 </table>
-```
-
-## Mobile Optimization
-
-Based on the screenshots, the interface is optimized for mobile devices:
-
-### Touch-Friendly Design
-- **Button height**: Minimum 44px for easy touch interaction
-- **Slider handles**: Large enough for finger control
-- **Spacing**: Adequate gaps between interactive elements
-- **Text size**: Readable on small screens
-
-### Responsive Layout
-```css
-@media (max-width: 480px) {
-    .container {
-        min-width: 320px;
-        padding: 10px;
-    }
-    
-    button {
-        min-height: 44px;
-        font-size: 16px; /* Prevents zoom on iOS */
-    }
-    
-    input[type="range"] {
-        height: 44px;
-    }
-}
 ```
 
 This guide provides the foundation for creating Tasmota-compatible WebUI interfaces that are efficient, user-friendly, and consistent with the existing design system. The visual specifications are based on actual Tasmota WebUI screenshots showing the main control page, configuration forms, and navigation menus.

@@ -90,7 +90,7 @@ class mqttdata_cls
 
       if !self.mqtt_state
         # Assume first call to here defines full_topic (%prefix%/%topic%/) and Prefix3
-#        var fulltopic = config['ft']               # "%prefix%/%topic%/"
+#        var full_topic = config['ft']              # "%prefix%/%topic%/"
         var tele_topic = config['tp'][2]            # tele = Prefix3 used by STATE message
         self.mqtt_state = format("%s/#", tele_topic)
         mqtt.subscribe(self.mqtt_state, /topic, idx, data, databytes -> self.handle_state_data(topic, idx, data, databytes))
@@ -182,6 +182,7 @@ class mqttdata_cls
   def persist_save()
     persist.std_devicename = self.bool_devicename
     persist.std_version = self.bool_version
+    persist.std_ipaddress = self.bool_ipaddress
     persist.save()
 #    tasmota.log("STD: Persist saved", 3)
   end

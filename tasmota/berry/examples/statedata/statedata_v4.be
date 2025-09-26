@@ -20,7 +20,6 @@ class mqttdata_cls
   var line_highlight                                # Highlight latest change duration
   var line_highlight_color                          # Latest change highlight color
   var line_lowuptime_color                          # Low uptime highlight color
-  var line_duration                                 # Duration option
   var mqtt_state                                    # MQTT tele STATE subscribe format
   var bool_devicename                               # Show device name
   var bool_version                                  # Show version
@@ -37,7 +36,6 @@ class mqttdata_cls
     self.line_highlight = 10                        # Highlight latest change duration in seconds
     self.line_highlight_color = "yellow"            # Latest change highlight HTML color like "#FFFF00" or "yellow"
     self.line_lowuptime_color = "lime"              # Low uptime highlight HTML color like "#00FF00" or "lime"
-    self.line_duration = 0                          # Show duration of last state message (1)
     self.mqtt_state = ""                            # MQTT tele STATE subscribe format
     self.bool_devicename = persist.std_devicename   # Show device name
     self.bool_version = persist.std_version         # Show version
@@ -229,6 +227,21 @@ class mqttdata_cls
         if list_index < 0 list_index = 0 end
       end
       var msg = "</table><table style='width:100%;font-size:80%'>" # Terminate two column table and open new table
+
+      msg += "<tr>"
+      if self.bool_devicename
+        msg += "<th>Device Name&nbsp</th>"
+      end
+      if self.bool_version
+        msg += "<th>Version&nbsp</th>"
+      end
+      msg += "<th>Hostname&nbsp</th>"
+      if self.bool_ipaddress
+        msg += "<th>IP Address&nbsp</th>"
+      end
+      msg += "<th align='right'>Uptime&nbsp</th>"
+      msg += "</tr>"
+
       while list_index < list_size
         var splits = string.split(self.list_buffer[list_index], "\001")
         var hostname = splits[0]
@@ -264,9 +277,6 @@ class mqttdata_cls
           msg += format("<td align='right'>%s</td>", uptime)
         end
 
-        if self.line_duration
-          msg += format("<td style='font-size:90%%'>&#x1F557;%s</td>", self.dhm(last_seen))  # Clock
-        end
         msg += "</tr>"
         list_index += 1
       end

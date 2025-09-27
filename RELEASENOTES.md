@@ -152,6 +152,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 - Use HAL instead of ROM for SHA HW acceleration as used by TLS [#23902](https://github.com/arendst/Tasmota/issues/23902)
 - BLE updates for esp-nimble-cpp v2.x [#23553](https://github.com/arendst/Tasmota/issues/23553)
 - Berry raise webserver hooks from 16 to 32 [#23748](https://github.com/arendst/Tasmota/issues/23748)
+- Berry add argument to `werbserver.content_send_style` [#23953](https://github.com/arendst/Tasmota/issues/23953)
 
 ### Fixed
 - Syslog RFC5424 compliance [#23509](https://github.com/arendst/Tasmota/issues/23509)

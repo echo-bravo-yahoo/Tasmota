@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [15.0.1.4]
 ### Added
+- ESP32 Extension Manager, replacing loading of Partition Wizard (#23955)
 
 ### Breaking Changed
 
@@ -23,7 +24,6 @@ All notable changes to this project will be documented in this file.
 - Extend state JSON message with functional hostname and ipaddress which could be WiFi or Ethernet
 - Berry multiplication between string and int (#23850)
 - Support for RX8030 RTC (#23855)
-- Extension Manager, replacing loading of Partition Wizard
 
 ### Breaking Changed
 - Berry `animate` framework is DEPRECATED, will be replace by `animation` framework (#23854)

@@ -126,6 +126,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 - NeoPool add Redox tank alarm [#19811](https://github.com/arendst/Tasmota/issues/19811)
 - I2S additions [#23543](https://github.com/arendst/Tasmota/issues/23543)
 - ESP32 ROM SHA Hardware Acceleration to BearSSL [#23819](https://github.com/arendst/Tasmota/issues/23819)
+- ESP32 Extension Manager, replacing loading of Partition Wizard [#23955](https://github.com/arendst/Tasmota/issues/23955)
 - Support for ESP32-P4 [#23663](https://github.com/arendst/Tasmota/issues/23663)
 - Support for ESP32-C5 [#23804](https://github.com/arendst/Tasmota/issues/23804)
 - ESP32-P4 command `HostedOta` [#23675](https://github.com/arendst/Tasmota/issues/23675)

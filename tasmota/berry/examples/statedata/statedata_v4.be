@@ -132,9 +132,9 @@ class mqttdata_cls
         if self.list_buffer.size()
           var list_index = 0
           var list_size = size(self.list_buffer)
-          var topic_delim = format("%s\001", topic) # Add find delimiter
+          var hostname_delim = format("%s\001", hostname) # Add find delimiter
           while list_index < list_size              # Use while loop as counter is decremented
-            if 0 == string.find(self.list_buffer[list_index], topic_delim)
+            if 0 == string.find(self.list_buffer[list_index], hostname_delim)
               self.list_buffer.remove(list_index)   # Remove current state
               list_size -= 1                        # Continue for duplicates
             end

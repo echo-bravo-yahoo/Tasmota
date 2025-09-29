@@ -20,7 +20,7 @@ class mqttdata_cls
   var line_highlight                                # Highlight latest change duration
   var line_highlight_color                          # Latest change highlight color
   var line_lowuptime_color                          # Low uptime highlight color
-  var mqtt_state                                    # MQTT tele STATE subscribe format
+  var mqtt_tele                                     # MQTT tele STATE subscribe format
   var bool_devicename                               # Show device name
   var bool_version                                  # Show version
   var bool_ipaddress                                # Show IP address
@@ -39,7 +39,6 @@ class mqttdata_cls
     self.line_highlight = 10                        # Highlight latest change duration in seconds
     self.line_highlight_color = "yellow"            # Latest change highlight HTML color like "#FFFF00" or "yellow"
     self.line_lowuptime_color = "lime"              # Low uptime highlight HTML color like "#00FF00" or "lime"
-    self.mqtt_state = ""                            # MQTT tele STATE subscribe format
     self.bool_devicename = persist.std_devicename   # Show device name
     self.bool_version = persist.std_version         # Show version
     self.bool_ipaddress = persist.std_ipaddress     # Show IP address
@@ -57,19 +56,21 @@ class mqttdata_cls
     self.list_buffer = []                           # Init line buffer list
     self.list_config = []                           # Init retained config buffer list
 
+#    var full_topic = tasmota.cmd('FullTopic', true) # "%prefix%/%topic%/"
+    var prefix_tele = tasmota.cmd("Prefix", true)['Prefix3'] # tele = Prefix3 used by STATE message
+    self.mqtt_tele = format("%s/#", prefix_tele)
+    mqtt.subscribe(self.mqtt_tele, /topic, idx, data, databytes -> self.handle_state_data(topic, idx, data, databytes))
+    mqtt.subscribe("tasmota/discovery/+/config", /topic, idx, data, databytes -> self.handle_discovery_data(topic, idx, data, databytes))
+
     if global.mqttdata_driver
       global.mqttdata_driver.stop()                 # Let previous instance bail out cleanly
     end
     tasmota.add_driver(global.mqttdata_driver := self)
-
-    mqtt.subscribe("tasmota/discovery/+/config", /topic, idx, data, databytes -> self.handle_discovery_data(topic, idx, data, databytes))
   end
 
   def stop()
     mqtt.unsubscribe("tasmota/discovery/+/config")
-    if self.mqtt_state
-      mqtt.unsubscribe(self.mqtt_state)
-    end
+    mqtt.unsubscribe(self.mqtt_tele)
     tasmota.remove_driver(self)
   end
 
@@ -98,20 +99,12 @@ class mqttdata_cls
       end
       self.list_config.push(line)                   # Add (re-discovered) config as last entry
 #      tasmota.log(format("STD: 222 Size %03d, Topic '%s', Line '%s'", self.list_config.size(), topic, line), 3)
-
-      if !self.mqtt_state
-        # Assume first call to here defines full_topic (%prefix%/%topic%/) and Prefix3
-#        var full_topic = config['ft']              # "%prefix%/%topic%/"
-        var tele_topic = config['tp'][2]            # tele = Prefix3 used by STATE message
-        self.mqtt_state = format("%s/#", tele_topic)
-        mqtt.subscribe(self.mqtt_state, /topic, idx, data, databytes -> self.handle_state_data(topic, idx, data, databytes))
-      end
-
     end
+    return true                                     # return true to stop propagation as a Tasmota cmd
   end
 
-  def handle_state_data(full_topic, idx, data, databytes)
-    var subtopic = string.split(full_topic, "/")
+  def handle_state_data(tele_topic, idx, data, databytes)
+    var subtopic = string.split(tele_topic, "/")
     if subtopic[-1] == "STATE"                      # tele/atomlite2/STATE
       var topic = subtopic[1]                       # Assume default Fulltopic (%prefix%/%topic%/) = tele/atomlite2/STATE = atomlite2
 
@@ -123,9 +116,9 @@ class mqttdata_cls
         end
       end
 #      tasmota.log(format("STD: Topic '%s', Index %d, Size %d, Line '%s'", topic, topic_index, self.list_config.size(), self.list_config[topic_index]), 3)
-      if topic_index == -1 return true end          # Assume topic is in retained discovery list
+      if topic_index == -1 return true end          # return true to stop propagation as a Tasmota cmd
 
-      var state = json.load(data)
+      var state = json.load(data)                   # Assume topic is in retained discovery list
       if state                                      # Valid JSON state message
         var config_splits = string.split(self.list_config[topic_index], "\001")
         var hostname = config_splits[1]
@@ -158,7 +151,7 @@ class mqttdata_cls
 
       end
     end
-    return true
+    return true                                     # return true to stop propagation as a Tasmota cmd
   end
 
   def sort_col(l, col, dir)                         # Sort list based on col and Hostname (is first entry in line)

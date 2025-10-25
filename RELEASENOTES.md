@@ -124,6 +124,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 
 ### Changed
 - LVGL library from v9.3.0 to v9.4.0 [#24028](https://github.com/arendst/Tasmota/issues/24028)
+- GPIOViewer from v1.6.3 to v1.7.0
 - Refactored library UDisplay [#24007](https://github.com/arendst/Tasmota/issues/24007)
 - Increased filesystem file name size from 48 to 50 characters
 

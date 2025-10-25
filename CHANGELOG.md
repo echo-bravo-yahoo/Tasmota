@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Refactored library UDisplay (#24007)
 - LVGL library from v9.3.0 to v9.4.0 (#24028)
 - Increased filesystem file name size from 48 to 50 characters
+- GPIOViewer from v1.6.3 to v1.7.0
 
 ### Fixed
 - TLS fix ECDSA and add `SetOption165 1` to enable ECDSA in addition to RSA (#24000)

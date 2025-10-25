@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Berry `light.get()` direct access to values (#24033)
 - HostedMCU file update using command `HostedLoad <version>|<filename>`
 - Berry `gc_heap` and `gc_time` to `tasmota.memory()` (#24054)
+- Scripter array transfer via UFS (#24060)
 
 ### Breaking Changed
 
@@ -25,6 +26,7 @@ All notable changes to this project will be documented in this file.
 - HASPmota exception in `cpicker` (colorwheel) (#24010)
 - Extension Manager Light Theme support and Extensions input field control
 - InfluxDb receives IPAddress as a value regression from v15.0.1.3 (#24031)
+- Scripter UDP and switch case (#24060)
 
 ### Removed
 

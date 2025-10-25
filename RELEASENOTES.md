@@ -115,6 +115,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 ## Changelog v15.1.0.1
 ### Added
 - HostedMCU file update using command `HostedLoad <version>|<filename>`
+- Scripter array transfer via UFS [#24060](https://github.com/arendst/Tasmota/issues/24060)
 - TLS enabled ECDSA by default for ESP8266 [#24009](https://github.com/arendst/Tasmota/issues/24009)
 - Berry `cb.free_cb` for extension manager [#24014](https://github.com/arendst/Tasmota/issues/24014)
 - Berry `light.get()` direct access to values [#24033](https://github.com/arendst/Tasmota/issues/24033)
@@ -130,6 +131,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 
 ### Fixed
 - InfluxDb receives IPAddress as a value regression from v15.0.1.3 [#24031](https://github.com/arendst/Tasmota/issues/24031)
+- Scripter UDP and switch case [#24060](https://github.com/arendst/Tasmota/issues/24060)
 - TLS fix ECDSA and add `SetOption165 1` to enable ECDSA in addition to RSA [#24000](https://github.com/arendst/Tasmota/issues/24000)
 - Extension Manager exception when `OtaUrl` is not defined or invalid
 - Extension Manager Light Theme support and Extensions input field control

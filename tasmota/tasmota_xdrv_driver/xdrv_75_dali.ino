@@ -1251,7 +1251,7 @@ void CmndDaliSend(void) {
     }
   }
   if (3 == params) {                                 // Set extended command mode
-    DaliSendData(DALI_ENABLE_DEVICE_TYPE_X, values[0] &0xFF);  // Enable Extended command
+    DaliSendWaitResponse(DALI_ENABLE_DEVICE_TYPE_X, values[0] &0xFF);  // Enable Extended command
     values[0] = values[1];
     values[1] = values[2];
     params = 2;
@@ -1288,7 +1288,7 @@ void CmndDaliQuery(void) {
     }
   }
   if (3 == params) {
-    DaliSendData(DALI_ENABLE_DEVICE_TYPE_X, values[0] &0xFF);  // Enable Extended command
+    DaliSendWaitResponse(DALI_ENABLE_DEVICE_TYPE_X, values[0] &0xFF);  // Enable Extended command
     values[0] = values[1];
     values[1] = values[2];
     params = 2;

@@ -235,8 +235,8 @@ enum UserSelectablePins {
 #ifdef ESP32
   GPIO_HSDIO_CMD, GPIO_HSDIO_CLK, GPIO_HSDIO_RST, GPIO_HSDIO_D0, GPIO_HSDIO_D1, GPIO_HSDIO_D2, GPIO_HSDIO_D3, // Hosted MCU SDIO interface, including 1-bit and 4-bit modes
 #endif
-  GPIO_MKSKYBLU_TX, GPIO_MKSKYBLU_RX,   // MakeSkyBlue solar charge controller
   GPIO_VID6608_F, GPIO_VID6608_CW,      // VID6608
+  GPIO_MKSKYBLU_TX, GPIO_MKSKYBLU_RX,   // MakeSkyBlue solar charge controller
   GPIO_SENSOR_END };
 
 // Error as warning to rethink GPIO usage with max 2045
@@ -514,8 +514,8 @@ const char kSensorNames[] PROGMEM =
 #ifdef ESP32
   D_SENSOR_HSDIO_CMD "|" D_SENSOR_HSDIO_CLK "|" D_SENSOR_HSDIO_RST "|" D_SENSOR_HSDIO_D0 "|" D_SENSOR_HSDIO_D1 "|" D_SENSOR_HSDIO_D2 "|" D_SENSOR_HSDIO_D3 "|"
 #endif
-  D_SENSOR_MKSKYBLU_TX "|" D_SENSOR_MKSKYBLU_RX "|"
   D_VID6608_F "|" D_VID6608_CW "|"
+  D_SENSOR_MKSKYBLU_TX "|" D_SENSOR_MKSKYBLU_RX "|"
 ;
 
 const char kSensorNamesFixed[] PROGMEM =

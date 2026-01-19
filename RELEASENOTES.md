@@ -117,6 +117,7 @@ The latter links can be used for OTA upgrades too like ``OtaUrl https://ota.tasm
 - Support for TCA9554 8-bit I/O expander mutually exclusive with PCA9557
 - Support for Adafruit I2C QT Rotary Encoder [#24270](https://github.com/arendst/Tasmota/issues/24270)
 - Zigbee support for `int24` type [#24334](https://github.com/arendst/Tasmota/issues/24334)
+- Berry `path.listdir("file.tapp#")` to list directory inside '.tapp' archives [#24367](https://github.com/arendst/Tasmota/issues/24367)
 
 ### Changed
 - ESP8266 platform update from 2025.10.00 to 2026.01.00 [#24354](https://github.com/arendst/Tasmota/issues/24354)

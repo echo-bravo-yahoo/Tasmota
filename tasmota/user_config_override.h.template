@@ -1,0 +1,285 @@
+#ifndef _USER_CONFIG_OVERRIDE_H_
+#define _USER_CONFIG_OVERRIDE_H_
+
+#warning **** user_config_override.h: Using Settings from this File ****
+
+// ***********************************************
+// ** Global settings for all binaries ***********
+
+// -- Setup your own Wifi settings  ---------------
+#undef  STA_SSID1
+#define STA_SSID1         "{{WIFI_SSID}}"             // [Ssid1] Wifi SSID
+#undef  STA_PASS1
+#define STA_PASS1         "{{WIFI_PASS}}"         // [Password1] Wifi password
+
+/* #ifdef USE_DISCOVERY */
+/*   #undef USE_DISCOVERY */
+/* #endif */
+
+/* // %prefix% token options */
+/* #define SUB_PREFIX             "cmnd"            // [Prefix1] Tasmota devices subscribe to %prefix%/%topic% being SUB_PREFIX/MQTT_TOPIC and SUB_PREFIX/MQTT_GRPTOPIC */
+/* #define PUB_PREFIX             "stat"            // [Prefix2] Tasmota devices publish to %prefix%/%topic% being PUB_PREFIX/MQTT_TOPIC */
+/* #define PUB_PREFIX2            "tele"            // [Prefix3] Tasmota devices publish telemetry data to %prefix%/%topic% being PUB_PREFIX2/MQTT_TOPIC/UPTIME, POWER and TIME */
+/*                                                  //   May be named the same as PUB_PREFIX */
+/* // %topic% token options (also ButtonTopic and SwitchTopic) */
+/* #define MQTT_TOPIC             PROJECT "_%06X"   // [Topic] unique MQTT device topic including (part of) device MAC address */
+/* #define MQTT_GRPTOPIC          "tasmotas"        // [GroupTopic] MQTT Group topic */
+/* #define MQTT_GROUPTOPIC_FORMAT false             // [SetOption75] GroupTopic replaces %topic% (false) or fixed topic cmnd/grouptopic (true) */
+/* #define MQTT_BUTTON_TOPIC      "0"               // [ButtonTopic] MQTT button topic, "0" = same as MQTT_TOPIC, set to 'PROJECT "_BTN_%06X"' for unique topic including device MAC address */
+/* #define MQTT_SWITCH_TOPIC      "0"               // [SwitchTopic] MQTT button topic, "0" = same as MQTT_TOPIC, set to 'PROJECT "_SW_%06X"' for unique topic including device MAC address */
+/* #define MQTT_CLIENT_ID         "DVES_%06X"       // [MqttClient] Also fall back topic using last 6 characters of MAC address or use "DVES_%12X" for complete MAC address */
+
+// -- Location ------------------------------------
+#ifdef LATITUDE
+  #undef LATITUDE
+#endif
+#ifdef LONGITUDE
+  #undef LONGITUDE
+#endif
+#define LATITUDE               47.6038321
+#define LONGITUDE             -122.330062
+
+// Daylight savings time info
+// See https://tasmotatimezone.com for more info
+#ifdef TIME_DST_HEMISPHERE
+  #undef TIME_DST_HEMISPHERE
+#endif
+#define TIME_DST_HEMISPHERE    North
+#ifdef TIME_DST_WEEK
+  #undef TIME_DST_WEEK
+#endif
+#define TIME_DST_WEEK          2
+#ifdef TIME_DST_DAY
+  #undef TIME_DST_DAY
+#endif
+#define TIME_DST_DAY           Sun
+#ifdef TIME_DST_MONTH
+  #undef TIME_DST_MONTH
+#endif
+#define TIME_DST_MONTH         Mar
+#ifdef TIME_DST_HOUR
+  #undef TIME_DST_HOUR
+#endif
+#define TIME_DST_HOUR          2
+#ifdef TIME_DST_OFFSET
+  #undef TIME_DST_OFFSET
+#endif
+#define TIME_DST_OFFSET        -420
+#ifdef TIME_STD_HEMISPHERE
+  #undef TIME_STD_HEMISPHERE
+#endif
+#define TIME_STD_HEMISPHERE    North
+#ifdef TIME_STD_WEEK
+  #undef TIME_STD_WEEK
+#endif
+#define TIME_STD_WEEK          First
+#ifdef TIME_STD_DAY
+  #undef TIME_STD_DAY
+#endif
+#define TIME_STD_DAY           Sun
+#ifdef TIME_STD_MONTH
+  #undef TIME_STD_MONTH
+#endif
+#define TIME_STD_MONTH         Nov
+#ifdef TIME_STD_HOUR
+  #undef TIME_STD_HOUR
+#endif
+#define TIME_STD_HOUR          2
+#ifdef TIME_STD_OFFSET
+  #undef TIME_STD_OFFSET
+#endif
+#define TIME_STD_OFFSET        -480
+
+#ifdef TEMP_CONVERSION
+  #undef TEMP_CONVERSION
+#endif
+#define TEMP_CONVERSION        true             // [SetOption8] Return temperature in (false = Celsius or true = Fahrenheit)
+#ifdef PRESSURE_CONVERSION
+  #undef PRESSURE_CONVERSION
+#endif
+#define PRESSURE_CONVERSION    false             // [SetOption24] Return pressure in (false = hPa or true = mmHg)
+#ifdef TEMP_RESOLUTION
+  #undef TEMP_RESOLUTION
+#endif
+#define TEMP_RESOLUTION        3                 // [TempRes] Maximum number of decimals (0 - 3) showing sensor Temperature
+#ifdef HUMIDITY_RESOLUTION
+  #undef HUMIDITY_RESOLUTION
+#endif
+#define HUMIDITY_RESOLUTION    3                 // [HumRes] Maximum number of decimals (0 - 3) showing sensor Humidity
+#ifdef PRESSURE_RESOLUTION
+  #undef PRESSURE_RESOLUTION
+#endif
+#define PRESSURE_RESOLUTION    3                 // [PressRes] Maximum number of decimals (0 - 3) showing sensor Pressure
+#ifdef ENERGY_RESOLUTION
+  #undef ENERGY_RESOLUTION
+#endif
+#define ENERGY_RESOLUTION      5                 // [EnergyRes] Maximum number of decimals (0 - 5) showing energy usage in kWh
+
+// -- Disable unused features --------------------
+#ifdef USE_DOMOTICZ
+  #undef USE_DOMOTICZ
+#endif
+#ifdef USE_EMULATION_HUE
+  #undef USE_EMULATION_HUE
+#endif
+#ifdef USE_EMULATION_WEMO
+  #undef USE_EMULATION_WEMO
+#endif
+
+// -- Influxdb ------------------------------------
+#define USE_INFLUXDB                             // Enable influxdb support (+5k code)
+#define INFLUXDB_STATE     1                   // [Ifx] Influxdb initially Off (0) or On (1)
+#define INFLUXDB_VERSION   2                   // Version of Influxdb 1 or 2
+#define INFLUXDB_HOST      "{{INFLUXDB_HOST}}"          // [IfxHost] Influxdb hostname or IP address
+#define INFLUXDB_PORT      8086                // [IfxPort] Influxdb port number
+#define INFLUXDB_ORG       "{{INFLUXDB_ORG}}"                  // [IfxUser, IfxOrg] Influxdb v1 username or v2 organisation
+#define INFLUXDB_TOKEN     "{{INFLUXDB_TOKEN}}"                  // [IfxPassword, IfxToken] Influxdb v1 password or v2 token
+#define INFLUXDB_BUCKET    "tasmota"                // [IfxDatabase, IfxBucket] Influxdb v1 database or v2 bucket
+#define INFLUXDB_RP        ""                  // [IfxRP] Influxdb retention policy
+
+// -- MQTT ----------------------------------------
+#undef MQTT_USE
+#define MQTT_USE               true // setoption 3 1
+#undef MQTT_TLS_ENABLED
+#define MQTT_TLS_ENABLED       true // setoption 103 1
+#undef  MQTT_HOST
+#define MQTT_HOST         "{{MQTT_HOST}}"
+#undef  MQTT_PORT
+#define MQTT_PORT         443
+#undef  MQTT_USER
+#define MQTT_USER         "{{MQTT_USER}}"
+#undef  MQTT_PASS
+#define MQTT_PASS         "{{MQTT_PASS}}"
+#ifndef USE_MQTT_TLS
+  #define USE_MQTT_TLS
+  #define USE_MQTT_TLS_CA_CERT // Optional but highly recommended
+#endif
+#ifndef USE_MQTT_AWS_IOT_LIGHT
+  #define USE_MQTT_AWS_IOT_LIGHT
+#endif
+
+#ifdef OTA_URL
+  #undef OTA_URL
+#endif
+#ifndef OTA_URL
+  #define OTA_URL "http://ota.tasmota.com/tasmota/release/tasmota-minimal.bin.gz"
+#endif
+
+#undef WIFI_DEFAULT_HOSTNAME
+#define WIFI_DEFAULT_HOSTNAME  "%s"         // [Hostname] Expands to <MQTT_TOPIC>
+
+#ifdef FIRMWARE_AC_CONTROLLER
+  // -- CODE_IMAGE_STR is the name shown between brackets on the
+  //    Information page or in INFO MQTT messages
+  #undef CODE_IMAGE_STR
+  #define CODE_IMAGE_STR "ac controller"
+  #undef FRIENDLY_NAME
+  #define FRIENDLY_NAME          "AC Controller"         // [FriendlyName] Friendlyname up to 32 characters used by webpages and Alexa
+
+  #ifndef USE_MIEL_HVAC
+    #define USE_MIEL_HVAC
+  #endif
+
+  // configure the template and make it the default (so it is active on device startup)
+  #ifdef MODULE
+  #undef MODULE
+  #define MODULE USER_MODULE
+  #endif
+  #ifdef FALLBACK_MODULE
+  #undef FALLBACK_MODULE
+  #define FALLBACK_MODULE USER_MODULE
+  #endif
+  #define USER_TEMPLATE "{\"NAME\":\"AC Controller\",\"GPIO\":[0,5376,0,5408,0,0,0,0,0,0,0,0,0,0],\"FLAG\":0,\"BASE\":18}"
+
+  // send metrics every 60 seconds
+  #undef TELE_PERIOD
+  #define TELE_PERIOD            60
+#endif
+
+#ifdef FIRMWARE_MJS01_LIGHT_SWITCH
+  // -- CODE_IMAGE_STR is the name shown between brackets on the
+  //    Information page or in INFO MQTT messages
+  #undef CODE_IMAGE_STR
+  #define CODE_IMAGE_STR "mjs01 light switch"
+  #undef FRIENDLY_NAME
+  #define FRIENDLY_NAME          "MJS01 Light Switch"         // [FriendlyName] Friendlyname up to 32 characters used by webpages and Alexa
+
+  // configure the template and make it the default (so it is active on device startup)
+  #ifdef MODULE
+  #undef MODULE
+  #define MODULE USER_MODULE
+  #endif
+  #ifdef FALLBACK_MODULE
+  #undef FALLBACK_MODULE
+  #define FALLBACK_MODULE USER_MODULE
+  #endif
+  #define USER_TEMPLATE "{\"NAME\":\"MJ-S01 Switch\",\"GPIO\":[1,1,1,1,832,320,0,0,224,32,544,1,0,0],\"FLAG\":0,\"BASE\":18}"
+#endif
+
+// for Sonoff Mini R4
+#ifdef FIRMWARE_LIGHT_SWITCH
+  #ifndef ESP32
+    #error *** This firmware target is for tasmota32 only ***
+  #endif
+
+  // -- CODE_IMAGE_STR is the name shown between brackets on the
+  //    Information page or in INFO MQTT messages
+  #undef CODE_IMAGE_STR
+  #define CODE_IMAGE_STR "light switch"
+  #undef FRIENDLY_NAME
+  #define FRIENDLY_NAME          "Light Switch"         // [FriendlyName] Friendlyname up to 32 characters used by webpages and Alexa
+
+  // configure the template and make it the default (so it is active on device startup)
+  #ifdef MODULE
+  #undef MODULE
+  #define MODULE USER_MODULE
+  #endif
+  #ifdef FALLBACK_MODULE
+  #undef FALLBACK_MODULE
+  #define FALLBACK_MODULE USER_MODULE
+  #endif
+  #define USER_TEMPLATE "{\"NAME\":\"Sonoff MINIR4\",\"GPIO\":[32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,576,0,0,0,0,0,0,224,160,0,0,0,0,0,0,0,0,0,0,0,0],\"FLAG\":0,\"BASE\":1}"
+#endif
+
+#ifdef FIRMWARE_SMART_SWITCH
+  #undef CODE_IMAGE_STR
+  #define CODE_IMAGE_STR "smart switch"
+  #undef FRIENDLY_NAME
+  #define FRIENDLY_NAME          "Smart switch"         // [FriendlyName] Friendlyname up to 32 characters used by webpages and Alexa
+
+  #ifdef MODULE
+    #undef MODULE
+    #define MODULE 41
+  #endif
+#endif
+
+#ifdef ESP32
+  #ifdef USE_FACE_DETECT
+    #undef USE_FACE_DETECT
+  #endif
+
+  #ifdef ENABLE_RTSPSERVER
+    #undef ENABLE_RTSPSERVER
+  #endif
+
+  #ifdef USE_WEBCAM
+    #undef USE_WEBCAM
+  #endif
+
+  #ifdef FIRMWARE_32_GENERIC
+    #undef CODE_IMAGE_STR
+    #define CODE_IMAGE_STR "tasmota 32 generic"
+  #endif
+#endif
+
+#ifdef FIRMWARE_GENERIC
+  #undef CODE_IMAGE_STR
+  #define CODE_IMAGE_STR "tasmota generic"
+#endif
+
+#endif  // _USER_CONFIG_OVERRIDE_H_
+
+/*
+// You might even pass some parameters from the command line ----------------------------
+// Ie:  export PLATFORMIO_BUILD_FLAGS='-DUSE_CONFIG_OVERRIDE -DMY_IP="192.168.1.99" -DMY_GW="192.168.1.1" -DMY_DNS="192.168.1.1"'
+*/

@@ -1,5 +1,8 @@
 ## OS specific ########
 .DS_Store
+
+## Secrets (generated at build time) ########
+tasmota/user_config_override.h
 .fuse_hidden*
 
 ## Compilation artefacts ########

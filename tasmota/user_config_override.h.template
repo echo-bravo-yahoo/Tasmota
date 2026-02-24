@@ -3,6 +3,11 @@
 
 #warning **** user_config_override.h: Using Settings from this File ****
 
+// {{SECRETS_SENTINEL}}
+#ifndef SECRETS_INJECTED
+  #error "Secrets were not injected. Run build-with-secrets.sh instead of building directly."
+#endif
+
 // ***********************************************
 // ** Global settings for all binaries ***********
 

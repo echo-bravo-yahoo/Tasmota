@@ -60,6 +60,16 @@ check_prerequisites() {
     fi
 }
 
+# Mask a secret value for logging (first 2 + last 2 chars, or fully masked if < 10 chars)
+mask_secret() {
+    local value="$1"
+    if [[ ${#value} -ge 10 ]]; then
+        echo "${value:0:2}...${value: -2}"
+    else
+        echo "****"
+    fi
+}
+
 # Fetch a secret from 1Password
 fetch_secret() {
     local field="$1"
@@ -69,6 +79,7 @@ fetch_secret() {
         error "Failed to fetch secret: $field"
         exit 1
     fi
+    info "  $field = $(mask_secret "$value")" >&2
     echo "$value"
 }
 
@@ -97,9 +108,21 @@ generate_config() {
         -e "s|{{MQTT_HOST}}|$mqtt_host|g" \
         -e "s|{{MQTT_USER}}|$mqtt_user|g" \
         -e "s|{{MQTT_PASS}}|$mqtt_pass|g" \
+        -e "s|// {{SECRETS_SENTINEL}}|#define SECRETS_INJECTED 1|" \
         "$TEMPLATE_FILE" > "$CONFIG_FILE"
 
-    info "Config file generated: $CONFIG_FILE"
+    # Validate: no remaining placeholders
+    local remaining
+    remaining=$(grep -c '{{[A-Z_]*}}' "$CONFIG_FILE" || true)
+    if [[ "$remaining" -gt 0 ]]; then
+        error "Found $remaining un-substituted placeholder(s) in generated config:"
+        grep '{{[A-Z_]*}}' "$CONFIG_FILE" >&2
+        exit 1
+    fi
+
+    local define_count
+    define_count=$(grep -c '#define' "$CONFIG_FILE" || true)
+    info "Config file generated: $CONFIG_FILE ($define_count #define lines, 0 remaining placeholders)"
 }
 
 # Run PlatformIO build

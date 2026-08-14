@@ -145,23 +145,14 @@
 // -- MQTT ----------------------------------------
 #undef MQTT_USE
 #define MQTT_USE               true // setoption 3 1
-#undef MQTT_TLS_ENABLED
-#define MQTT_TLS_ENABLED       true // setoption 103 1
 #undef  MQTT_HOST
 #define MQTT_HOST         "{{MQTT_HOST}}"
 #undef  MQTT_PORT
-#define MQTT_PORT         443
+#define MQTT_PORT         1883
 #undef  MQTT_USER
 #define MQTT_USER         "{{MQTT_USER}}"
 #undef  MQTT_PASS
 #define MQTT_PASS         "{{MQTT_PASS}}"
-#ifndef USE_MQTT_TLS
-  #define USE_MQTT_TLS
-  #define USE_MQTT_TLS_CA_CERT // Optional but highly recommended
-#endif
-#ifndef USE_MQTT_AWS_IOT_LIGHT
-  #define USE_MQTT_AWS_IOT_LIGHT
-#endif
 
 #ifdef OTA_URL
   #undef OTA_URL

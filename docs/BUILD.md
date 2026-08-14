@@ -82,16 +82,16 @@ Secrets are stored in 1Password under the item **"Tasmota Firmware Secrets"** in
 
 ### Secret Fields
 
-| Field | Description |
-|-------|-------------|
-| `wifi_ssid` | WiFi network name |
-| `wifi_pass` | WiFi password |
-| `influxdb_host` | InfluxDB server URL |
-| `influxdb_org` | InfluxDB organization |
-| `influxdb_token` | InfluxDB authentication token |
-| `mqtt_host` | AWS IoT MQTT endpoint |
-| `mqtt_user` | MQTT username (custom authorizer) |
-| `mqtt_pass` | MQTT password |
+| Field            | Description                                     |
+| ---------------- | ----------------------------------------------- |
+| `wifi_ssid`      | WiFi network name                               |
+| `wifi_pass`      | WiFi password                                   |
+| `influxdb_host`  | InfluxDB server URL                             |
+| `influxdb_org`   | InfluxDB organization                           |
+| `influxdb_token` | InfluxDB authentication token                   |
+| `mqtt_host`      | Local Mosquitto broker address (192.168.1.3)    |
+| `mqtt_user`      | MQTT username (dedicated `tasmota` broker user) |
+| `mqtt_pass`      | MQTT password                                   |
 
 ### Updating Secrets
 

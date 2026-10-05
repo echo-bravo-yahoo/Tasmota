@@ -187,6 +187,20 @@
   #endif
   #define USER_TEMPLATE "{\"NAME\":\"AC Controller\",\"GPIO\":[0,5376,0,5408,0,0,0,0,0,0,0,0,0,0],\"FLAG\":0,\"BASE\":18}"
 
+  // MiElHVAC needs sole use of the UART0 pins (GPIO1/GPIO3) to talk to the
+  // indoor unit; Tasmota's own console logging over serial competes for the
+  // same pins and keeps the driver from ever claiming them.
+  #undef SERIAL_LOG_LEVEL
+  #define SERIAL_LOG_LEVEL       LOG_LEVEL_NONE
+
+  // Report Celsius, not the global Fahrenheit default below -- Home
+  // Assistant's MQTT climate config for the AC units (configuration.yaml on
+  // stockholm) declares temperature_unit: "C" and does its own C->F
+  // conversion for display, so a Fahrenheit-reporting device gets converted
+  // a second time.
+  #undef TEMP_CONVERSION
+  #define TEMP_CONVERSION        false
+
   // send metrics every 60 seconds
   #undef TELE_PERIOD
   #define TELE_PERIOD            60

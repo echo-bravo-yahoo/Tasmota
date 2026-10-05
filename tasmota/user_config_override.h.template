@@ -3,6 +3,11 @@
 
 #warning **** user_config_override.h: Using Settings from this File ****
 
+// {{SECRETS_SENTINEL}}
+#ifndef SECRETS_INJECTED
+  #error "Secrets were not injected. Run build-with-secrets.sh instead of building directly."
+#endif
+
 // ***********************************************
 // ** Global settings for all binaries ***********
 
@@ -140,23 +145,14 @@
 // -- MQTT ----------------------------------------
 #undef MQTT_USE
 #define MQTT_USE               true // setoption 3 1
-#undef MQTT_TLS_ENABLED
-#define MQTT_TLS_ENABLED       true // setoption 103 1
 #undef  MQTT_HOST
 #define MQTT_HOST         "{{MQTT_HOST}}"
 #undef  MQTT_PORT
-#define MQTT_PORT         443
+#define MQTT_PORT         1883
 #undef  MQTT_USER
 #define MQTT_USER         "{{MQTT_USER}}"
 #undef  MQTT_PASS
 #define MQTT_PASS         "{{MQTT_PASS}}"
-#ifndef USE_MQTT_TLS
-  #define USE_MQTT_TLS
-  #define USE_MQTT_TLS_CA_CERT // Optional but highly recommended
-#endif
-#ifndef USE_MQTT_AWS_IOT_LIGHT
-  #define USE_MQTT_AWS_IOT_LIGHT
-#endif
 
 #ifdef OTA_URL
   #undef OTA_URL
@@ -190,6 +186,20 @@
   #define FALLBACK_MODULE USER_MODULE
   #endif
   #define USER_TEMPLATE "{\"NAME\":\"AC Controller\",\"GPIO\":[0,5376,0,5408,0,0,0,0,0,0,0,0,0,0],\"FLAG\":0,\"BASE\":18}"
+
+  // MiElHVAC needs sole use of the UART0 pins (GPIO1/GPIO3) to talk to the
+  // indoor unit; Tasmota's own console logging over serial competes for the
+  // same pins and keeps the driver from ever claiming them.
+  #undef SERIAL_LOG_LEVEL
+  #define SERIAL_LOG_LEVEL       LOG_LEVEL_NONE
+
+  // Report Celsius, not the global Fahrenheit default below -- Home
+  // Assistant's MQTT climate config for the AC units (configuration.yaml on
+  // stockholm) declares temperature_unit: "C" and does its own C->F
+  // conversion for display, so a Fahrenheit-reporting device gets converted
+  // a second time.
+  #undef TEMP_CONVERSION
+  #define TEMP_CONVERSION        false
 
   // send metrics every 60 seconds
   #undef TELE_PERIOD

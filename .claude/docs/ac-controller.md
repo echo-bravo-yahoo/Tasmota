@@ -29,18 +29,13 @@ CN105's TX/RX pin assignment isn't universal across Mitsubishi models — if `St
 - `TEMP_CONVERSION` → `false` (`SetOption8 0`). Home Assistant's MQTT climate config for both AC units declares `temperature_unit: "C"` and does its own C→F conversion for display. The fork-wide default is Fahrenheit (for other device types' own web UIs); reporting Fahrenheit here gets converted a second time, showing roughly double the real temperature in HA.
 - `MODULE`/`FALLBACK_MODULE` → `USER_MODULE`, activating the compiled `USER_TEMPLATE` (GPIO1/GPIO3 remapped to the MiElHVAC TX/RX functions) by default. This one doesn't need a firmware fix — it already works on a normal flash+install — but Tasmota's own quick-power-cycle safeguard can silently flip the live `Module` setting back to a generic board (observed: "Sonoff Basic") if the device gets power-cycled rapidly many times in a row (e.g. while bench-debugging a flaky adapter connection). Symptom is identical to the SerialLog gap (`Drivers` shows `!44`) but the fix is different: send `Module 0` (not `Module 255` — that's an invalid value and silently no-ops) and restart.
 
-## Required manual step: the remote-temp boot rule
+## The remote-temp boot rule
 
 Both units get their room temperature from a `cutie` weather station (`skeppsholmen` for `upstairs_ac`, `vaxholm` for `downstairs_ac`) publishing to `cmnd/<topic>/HVACRemoteTemp` on a ~60s cadence — see `~/.claude/docs/cutie-fleet.md`. The MiElHVAC driver's remote-temp auto-clear timeout (`HVACRemoteTempClearTime`) defaults to 10 seconds and lives only in RAM (`remotetemp_auto_clear_time` in `xdrv_44_miel_hvac.ino`, never read from or written to flash settings) — it resets to that default on every boot, regardless of firmware. With the default 10s window and a ~60s publish cadence, the remote sensor value clears and re-arms once a minute, which shows up in Home Assistant as the thermostat's temperature source intermittently flapping.
 
-There's no compile-time macro for this (unlike `SERIAL_LOG_LEVEL`/`TEMP_CONVERSION` above) — it has to be set with a boot-time Rule, which is itself a runtime setting (`Settings->rules`), not something `user_config_override.h.template` can bake in. After flashing, run:
+There's no compile-time macro for `HVACRemoteTempClearTime` itself (unlike `SERIAL_LOG_LEVEL`/`TEMP_CONVERSION` above) — it can only be set with a Rule, a runtime setting (`Settings->rules`). But `user_config_override.h.template`'s `FIRMWARE_AC_CONTROLLER` block installs that rule automatically via stock Tasmota's `USER_RULE1`/`USER_BACKLOG` hooks (`my_user_config.h`), which `SettingsDefault()` applies on first boot and on `Reset 1`/`2`/`4`/`5`/`6` (`tasmota_support/settings.ino`) — covering both a raw fresh flash and the `Reset 5` step in Flashing gotchas below. No manual command is needed after flashing. Confirm with `Rule1` (no argument) — `State` should read `ON` and `Rules` should read `ON System#Boot DO HVACRemoteTempClearTime 300000 ENDON`.
 
-```
-Rule1 ON System#Boot DO HVACRemoteTempClearTime 300000 ENDON
-Rule1 1
-```
-
-The second command enables the rule (`Rule1 <text>` alone only stores it, disabled). This re-arms a 300000ms (5 minute) clear time on every boot going forward. To fix it immediately without waiting for a reboot, also run `HVACRemoteTempClearTime 300000` once by hand. Confirm with `Rule1` (no argument) — `State` should read `ON` and `Rules` should match the line above, same as `downstairs_ac`.
+Both currently-deployed units already carry this rule from before it was compiled in — `downstairs_ac` manually for 9+ months, `upstairs_ac` applied live via MQTT on 2026-10-08 — so neither needed a reflash when this became part of the template.
 
 ## Flashing gotchas (bare ESP-01 + USB/UART adapter, no dedicated programmer)
 

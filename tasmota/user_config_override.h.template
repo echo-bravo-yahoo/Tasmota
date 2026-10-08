@@ -201,6 +201,16 @@
   #undef TEMP_CONVERSION
   #define TEMP_CONVERSION        false
 
+  // cutie's weather stations (vaxholm, skeppsholmen) only push a fresh HVACRemoteTemp value
+  // every ~60s; the MiElHVAC driver's own clear-time default is 10s and lives only in RAM
+  // (resets every boot), so without this it clears and re-arms between updates -- visible in
+  // Home Assistant as the thermostat's temperature source flapping on a ~1 minute cycle.
+  // USER_RULE1/USER_BACKLOG are stock Tasmota hooks (my_user_config.h) that run automatically
+  // via SettingsDefault() -- on first boot and on Reset 1/2/4/5/6 -- so this needs no manual
+  // command after flashing.
+  #define USER_RULE1   "ON System#Boot DO HVACRemoteTempClearTime 300000 ENDON"
+  #define USER_BACKLOG "Rule1 1"
+
   // send metrics every 60 seconds
   #undef TELE_PERIOD
   #define TELE_PERIOD            60

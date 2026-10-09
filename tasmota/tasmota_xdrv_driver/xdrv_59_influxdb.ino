@@ -78,6 +78,10 @@
 #ifndef INFLUXDB_RP
 #define INFLUXDB_RP        ""            // [IfxRP] Influxdb v1 retention policy (blank is default, usually autogen infinite)
 #endif
+#ifndef INFLUXDB_SKIP_KEYS
+#define INFLUXDB_SKIP_KEYS ""            // '|' separated sensor.key names never sent to Influxdb, e.g. "mielhvac.stage|mielhvac.timers"
+#endif
+const char kInfluxDbSkipKeys[] PROGMEM = INFLUXDB_SKIP_KEYS;
 
 static const char UninitializedMessage[] PROGMEM = "Unconfigured instance";
 // This cannot be put to PROGMEM due to the way how it is used
@@ -315,6 +319,12 @@ char* InfluxDbNumber(char* alternative, JsonParserToken value) {
 void InfluxDbProcessJsonValue(JsonParserKey key, JsonParserToken value, const char* sensor_name, String *data) {
   char type[64];         // 'temperature'
   LowerCase(type, key.getStr());
+  char sensor[64];       // 'ds18b20'
+  LowerCase(sensor, sensor_name);
+  char skip[130];        // 'mielhvac.roomtemp'
+  snprintf_P(skip, sizeof(skip), PSTR("%s.%s"), sensor, type);
+  char token[130];
+  if (GetCommandCode(token, sizeof(token), skip, kInfluxDbSkipKeys) >= 0) { return; }
   bool is_id = (!strcmp_P(type, PSTR("id")));  // Index for DS18B20
   bool is_array = value.isArray();
   if (is_id && !is_array) {
@@ -325,8 +335,6 @@ void InfluxDbProcessJsonValue(JsonParserKey key, JsonParserToken value, const ch
   char number[12];       // '1' to '255'
   char* my_value = InfluxDbNumber(number, (is_array) ? (value.getArray())[0] : value);
   if ((my_value != nullptr) && key.isValid()) {
-    char sensor[64];     // 'ds18b20'
-    LowerCase(sensor, sensor_name);
     char linebuf[128];   // 'temperature,device=demo,sensor=ds18b20,id=01144A0CB2AA value=26.44\n'
     if (is_array) {
       JsonParserArray arr = value.getArray();

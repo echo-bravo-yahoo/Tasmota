@@ -211,6 +211,10 @@
   #define USER_RULE1   "ON System#Boot DO HVACRemoteTempClearTime 300000 ENDON"
   #define USER_BACKLOG "Rule1 1"
 
+  // The MiElHVAC driver puts hex dumps of the serial packets it reads in its telemetry JSON, and the
+  // Influxdb driver stores any string made only of digits as a number, so some of them land as junk.
+  #define INFLUXDB_SKIP_KEYS "mielhvac.settings|mielhvac.roomtemp|mielhvac.timers|mielhvac.status|mielhvac.stage"
+
   // send metrics every 60 seconds
   #undef TELE_PERIOD
   #define TELE_PERIOD            60

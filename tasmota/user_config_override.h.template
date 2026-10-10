@@ -263,6 +263,12 @@
   #define FALLBACK_MODULE USER_MODULE
   #endif
   #define USER_TEMPLATE "{\"NAME\":\"Sonoff MINIR4\",\"GPIO\":[32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,576,0,0,0,0,0,0,224,160,0,0,0,0,0,0,0,0,0,0,0,0],\"FLAG\":0,\"BASE\":1}"
+
+  // The relay follows the rocker's position. The inverted mode is needed because this input reads OFF while
+  // the rocker is in its on position (the bedroom and porch switches both behave this way). Applied only by
+  // SettingsDefault(), so a device that already has saved settings needs `SwitchMode1 2` sent once after the OTA.
+  #undef SWITCH_MODE
+  #define SWITCH_MODE            FOLLOW_INV
 #endif
 
 #ifdef FIRMWARE_SMART_SWITCH

@@ -14,6 +14,8 @@ Each controller's address comes from a reservation on the router (FreshTomato at
 
 After swapping a board, replace the MAC in that one entry, run `nvram commit` and `service dnsmasq restart`, then send `Restart 1` to the board so it renews its lease. Do all router work in one `ssh router` call, because the router bans a source after three new SSH connections in 60 seconds. The Home Assistant device "Upstairs" (firmware 15.2.0.2) is the dead board's registry entry and is stale.
 
+A replacement board comes up with the login baked into the firmware (broker user `tasmota`, no web password), while the rest of the fleet uses broker user `home` and the shared web password. After flashing, set both with `WebPassword2 <password>` and `Backlog MqttUser home; MqttPassword2 <password>`, over HTTP or MQTT. Use the `2` variants, because the plain commands echo the password in their reply. The `home` password is in the 1Password item "Mosquitto API credentials" (Private vault, id `6it5jydd7uzj7dxvcdkdo25icm`, field `credential`) whose username is `home`; a second item with the same title holds a different login.
+
 ## CN105 wiring
 
 | CN105 pin | Signal        | Goes to                                |
@@ -66,7 +68,7 @@ Verify with these checks, over HTTP (`http://<ip>/cm?cmnd=...`) or MQTT (`cmnd/<
 - `Status 1` shows `BootCount` up by one and `RestartReason` of `Software/System restart`. The count rises by one rather than two because Tasmota increments it only after 10 seconds of uptime, and the minimal image restarts into the full image before then (observed on both controllers on 2026-10-09). Keep polling `Status 1` for 15 minutes: an unchanged `BootCount` means the board did not reboot.
 - In the `tasmota` InfluxDB bucket, `temperature` and `uptimesec` points keep arriving for the device, and no new `stage`, `timers`, `status` or `roomtemp` points appear.
 
-`downstairs_ac` has a web password that nobody has recorded, so HTTP returns 401. Reach it over MQTT with the broker credentials in the "Tasmota Firmware Secrets" 1Password item (`mqtt_user`, `mqtt_pass`): publish to `cmnd/downstairs_ac/<command>` and read `stat/downstairs_ac/#`. A reply on `stat/` is the only proof the command arrived, because the broker silently drops publishes that its ACL denies. `upstairs_ac` has no web password.
+Every Tasmota device on the LAN shares one web password, stored in the 1Password item "Tasmota device web login" (Private vault, username `admin`). Over HTTP, read it with `cc-cred run` and give it to `curl` through a config on stdin (`curl -K -`), so it never appears in a command line. Over MQTT no web password is needed: publish to `cmnd/<topic>/<command>` and read `stat/<topic>/#`, using the broker credentials in the "Tasmota Firmware Secrets" item (`mqtt_user`, `mqtt_pass`). A reply on `stat/` is the only proof the command arrived, because the broker silently drops publishes that its ACL denies.
 
 ## Flashing gotchas (bare ESP-01 + USB/UART adapter, no dedicated programmer)
 

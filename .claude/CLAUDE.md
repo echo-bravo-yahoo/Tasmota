@@ -24,6 +24,10 @@ When a device needs non-default behavior, prefer in this order:
 
 See `.claude/docs/ac-controller.md` for CN105 wiring, the known 5V-direct-to-ESP01 failure mode, required firmware defaults (SerialLog/TEMP_CONVERSION/Module), and flashing gotchas.
 
+## Light Switch (Sonoff MINIR4)
+
+See `.claude/docs/light-switch.md` for the `tasmota-light-switch` build and the OTA, configuration and Home Assistant steps for a new or reflashed switch.
+
 ## Branches
 
 - `development` - the only branch. The 1Password secrets integration (previously on `secrets-to-1password`) was merged in on 2026-10-05, and `master`/`patch-1`/`secrets-to-1password` were deleted the same day.

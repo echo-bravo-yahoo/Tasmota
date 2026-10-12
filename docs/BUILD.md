@@ -18,6 +18,8 @@ Sign in to your account:
 op signin --account my.1password.com
 ```
 
+On WSL, skip `op signin`: the Linux `op` cannot unlock there. `build-with-secrets.sh` detects WSL and re-runs itself under `cc-cred run`, which reads the secrets through the Windows `op.exe` and passes them to the build as `FW_<field>` environment variables. This needs `cc-cred` on `PATH` and "Integrate with 1Password CLI" turned on in the Windows 1Password app (Settings → Developer).
+
 ### PlatformIO
 
 Install PlatformIO Core (CLI):

@@ -8,7 +8,11 @@ CONFIG_FILE="$PROJECT_ROOT/tasmota/user_config_override.h"
 
 # 1Password configuration
 OP_ACCOUNT="my.1password.com"
+OP_VAULT="Private"
 OP_ITEM="Tasmota Firmware Secrets"
+SECRET_FIELDS=(wifi_ssid wifi_pass influxdb_host influxdb_org influxdb_token mqtt_host mqtt_user mqtt_pass)
+
+ORIGINAL_ARGS=("$@")
 
 # Default build target
 BUILD_TARGET="${1:-tasmota}"
@@ -38,20 +42,22 @@ trap cleanup EXIT
 
 # Check prerequisites
 check_prerequisites() {
-    if ! command -v op &> /dev/null; then
-        error "1Password CLI (op) not found. Install from: https://developer.1password.com/docs/cli/"
-        exit 1
-    fi
-
     if ! command -v pio &> /dev/null; then
         error "PlatformIO CLI (pio) not found. Install from: https://platformio.org/install/cli"
         exit 1
     fi
 
-    if ! op account get --account "$OP_ACCOUNT" &> /dev/null; then
-        error "Not signed in to 1Password account: $OP_ACCOUNT"
-        error "Run: op signin --account $OP_ACCOUNT"
-        exit 1
+    if [[ -z "${SECRETS_FROM_CC_CRED:-}" ]]; then
+        if ! command -v op &> /dev/null; then
+            error "1Password CLI (op) not found. Install from: https://developer.1password.com/docs/cli/"
+            exit 1
+        fi
+
+        if ! op account get --account "$OP_ACCOUNT" &> /dev/null; then
+            error "Not signed in to 1Password account: $OP_ACCOUNT"
+            error "Run: op signin --account $OP_ACCOUNT"
+            exit 1
+        fi
     fi
 
     if [[ ! -f "$TEMPLATE_FILE" ]]; then
@@ -70,11 +76,32 @@ mask_secret() {
     fi
 }
 
-# Fetch a secret from 1Password
+# On WSL the Linux op cannot unlock, so re-run this script under cc-cred, which reads
+# the secrets through the Windows op.exe and passes each one in as FW_<field>.
+reexec_under_cc_cred() {
+    [[ -z "${SECRETS_FROM_CC_CRED:-}" ]] || return 0
+    grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null || return 0
+    command -v cc-cred &> /dev/null || return 0
+
+    local refs=() field
+    for field in "${SECRET_FIELDS[@]}"; do
+        refs+=("FW_$field=op://$OP_VAULT/$OP_ITEM/$field")
+    done
+
+    info "WSL detected: reading secrets through cc-cred"
+    SECRETS_FROM_CC_CRED=1 exec cc-cred run --account "$OP_ACCOUNT" "${refs[@]}" -- \
+        "${BASH_SOURCE[0]}" ${ORIGINAL_ARGS[@]+"${ORIGINAL_ARGS[@]}"}
+}
+
+# Fetch a secret from the FW_<field> env var when cc-cred supplied it, else from 1Password
 fetch_secret() {
     local field="$1"
-    local value
-    value=$(op item get "$OP_ITEM" --account "$OP_ACCOUNT" --fields "$field" 2>/dev/null)
+    local value var="FW_$1"
+    if [[ -n "${SECRETS_FROM_CC_CRED:-}" ]]; then
+        value="${!var:-}"
+    else
+        value=$(op item get "$OP_ITEM" --account "$OP_ACCOUNT" --fields "$field" 2>/dev/null)
+    fi
     if [[ -z "$value" ]]; then
         error "Failed to fetch secret: $field"
         exit 1
@@ -146,6 +173,8 @@ run_build() {
 }
 
 main() {
+    reexec_under_cc_cred
+
     info "Tasmota build script with 1Password secrets"
     info "============================================"
 

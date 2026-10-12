@@ -58,8 +58,8 @@ Build with firmware-specific flags:
 # AC Controller firmware
 ./scripts/build-with-secrets.sh tasmota -DFIRMWARE_AC_CONTROLLER
 
-# Light Switch (ESP32)
-./scripts/build-with-secrets.sh tasmota32 -DFIRMWARE_LIGHT_SWITCH
+# Light Switch (ESP32, Sonoff MINIR4)
+./scripts/build-with-secrets.sh tasmota-light-switch
 
 # MJS01 Light Switch
 ./scripts/build-with-secrets.sh tasmota -DFIRMWARE_MJS01_LIGHT_SWITCH
